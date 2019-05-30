@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>reveal.js</title>
+
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/reveal.css" />
+    <link rel="stylesheet" href="css/theme/black.css" />
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/monokai.css" />
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match(/print-pdf/gi)
+        ? 'css/print/pdf.css'
+        : 'css/print/paper.css';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h1>History API</h1>
+        </section>
+        <section>
+          <p>
+            The <span class="hljs-strong">HTML5 history API</span> is a
+            standardized way to manipulate the browser history via script.
+          </p>
+          <h3 class="fragment">Features</h3>
+          <ul>
+            <li class="fragment">Traveling through history</li>
+            <li class="fragment">Changing the address bar content</li>
+            <li class="fragment">Adding and modifying history entries</li>
+            <li class="fragment">Triggering the browser navigation methods</li>
+          </ul>
+          <aside class="notes">
+            The HTML5 history API is a standardized way to manipulate the
+            browser history via script. Before the history API, developers had
+            to use hash URLs to change the current URL without reloading the
+            single-page.  Now this API gives us some useful features such
+            as: traveling through history, changing the address bar
+            conten, adding and modifying history entries, triggering the
+            browser navigation methods.
+          </aside>
+        </section>
+        <section>
+          <h2>Access the History API</h2>
+          <p>
+            The History API is available on the
+            <span class="hljs-strong">window</span> object, so you can call it
+            like this: <span class="hljs-strong">window.history</span
+            ><span class="fragment" data-fragment-index="1">
+              or just <span class="hljs-strong">history</span>.</span
+            >
+            <img
+              src="./img/history.png"
+              alt="window.history"
+              class="fragment"
+              data-fragment-index="1"
+            />
+          </p>
+          <aside class="notes">
+            The history API is available from the window.history object. You
+            can simply open the console of your browser and type window.history
+            (or just history) which will show you the object and its
+            properties.
+          </aside>
+        </section>
+        <section>
+          <h2>Navigate the history</h2>
+          <ul style="list-style: none">
+            <li class="fragment">
+              Go back to the previous page
+              <pre><code data-trim data-noescape>history.back()</code></pre>
+            </li>
+            <li class="fragment">
+              Go forward to the next page
+              <pre><code data-trim data-noescape>
+history.forward() 
+              </code></pre>
+            </li>
+            <li class="fragment">
+              Navigate back or forward multiple levels deep
+              <pre><code data-trim data-noescape>
+history.go(-1); // equivalent to history.back()
+history.go(-2); // equivalent to calling history.back() twice
+history.go(3); // equivalent to calling history.forward() 3 times
+              </code></pre>
+            </li>
+            <li class="fragment">
+              Number of entries in the history
+              <pre><code data-trim data-noescape>
+history.length
+          </code></pre>
+            </li>
+          </ul>
+          <aside class="notes">
+            Let’s start with the simplest things you can do with the history
+            API. You can go back to the previous page using history.back.
+            This goes to the previous entry in the session history. You can
+            forward to the next page using history.forward. This is exactly just
+            like clicking on the browser's back and forward buttons. Also the go()
+            method lets you navigate back or forward multiple levels deep. To
+            know how many entries there are in the history, you can call
+            history.length.
+          </aside>
+        </section>
+        <section>
+          <h2>Add an entry to the history</h2>
+          <pre class="fragment"><code data-trim data-noescape>
+history.pushState(state, title, url);
+          </code></pre>
+          <pre class="fragment"><code data-trim data-noescape>
+const stateObj = { some: 'data' }
+history.pushState(stateObj, '', '/new')
+          </code></pre>
+          <h4 class="fragment">Parameters</h4>
+          <ul>
+            <li class="fragment">
+              State - object which is associated with the new history entry
+              created by pushState()
+            </li>
+            <li class="fragment">
+              Title - currently ignores by major browsers
+            </li>
+            <li class="fragment">URL - the new history entry's URL</li>
+          </ul>
+
+          <aside class="notes">
+            It's time to adding and modifying history entries. Using
+            pushState method you can create a new history entry
+            programmatically.  Calling this won’t change the content of the
+            page, and does not cause any browser action like changing
+            window.location would. This method takes three parameters: a
+            state object, a title and a URL. The first is an object which can
+            contain anything (there is a size limit however, and the object
+            needs to be serializable). The second parameter is currently
+            unused by major browsers, so you generally pass an empty string.
+            The third parameter is a URL associated to the new state. Note that
+            the URL needs to belong to the same origin domain of the current
+            URL.
+          </aside>
+        </section>
+        <section>
+          <h2>Modify history entries</h2>
+          <p>
+            <span class="hljs-strong" class="fragment">replaceState()</span>
+            allows you to edit the current history state
+          </p>
+          <pre
+            class="fragment"
+            data-fragment-index="1"
+          ><code data-trim data-noescape>
+history.pushState({}, '', '/posts')
+const state = { post: 'first' }
+history.pushState(state, '', '/post/first')
+const state = { post: 'second' }
+
+history.replaceState(state, '', '/post/second')
+          </code></pre>
+          <pre
+            class="fragment"
+          ><code data-trim data-noescape>history.back()</code></pre>
+          <p class="fragment">
+            The browser goes straight to
+            <span class="hljs-string">/posts</span>, since
+            <span class="hljs-string">/post/first</span> was replaced by
+            <span class="hljs-string">/post/second</span>.
+          </p>
+          <aside class="notes">
+            While pushState() lets you add a new state to the history,
+            replaceState() allows you to edit the current history state. If you
+            now call history.back() the browser goes straight to /posts,
+            since entry named "first" was replaced by "second" entry.
+          </aside>
+        </section>
+        <section>
+          <h2>Access the current history entry state</h2>
+          <pre><code data-trim data-noescape>
+history.state
+          </code></pre>
+          <span>
+            Returns the current state object.
+          </span>
+          <aside class="notes">
+            History.state property returns the current state object.
+            <p>
+              Thus far, we have covered the pushState and
+              replaceState events in order to control the browser history, but
+              browser do not know what it should do when user clicks the browser
+              "back" and "forward" buttons.
+            </p>
+          </aside>
+        </section>
+        <section>
+          <h2>The onpopstate event</h2>
+          <p class="fragment" data-fragment-index="1">
+            This event is called on window every time the active history entry
+            changes
+          </p>
+          <pre
+            class="fragment"
+            data-fragment-index="1"
+          ><code data-trim data-noescape>
+window.onpopstate = event => {
+  console.log(event.state)
+}
+          </code></pre>
+
+          <aside class="notes">
+            <p>
+              That's what the popstate event is gonna do for us. This code
+              for example will log the new state object every time you call
+              history.back(), history.forward() or history.go().
+            </p>
+            When your page loads, it might have a null state object. This can
+            happen, if the page sets a state object (using pushState() or
+            replaceState()) and then the user restarts their browser. When your
+            page reloads, the page will receive an onload event, but no popstate
+            event. However, if you read the history.state property, you'll get
+            back the state object.
+          </aside>
+        </section>
+        <section>
+          <h2>THE WHY</h2>
+          <p class="fragment">
+            The HTML5 history API gives us the ability to tell the browser to
+            change the URL and only load half of the page.
+          </p>
+          <img
+            src="./img/magic.jpg"
+            alt="magic"
+            width="500px"
+            class="fragment"
+          />
+          <aside class="notes">
+            We've covered the history API, its properties and methods
+            before, but why should we use them? After all, a simple link can
+            navigate to a new URL; that’s the way the web has worked for 20
+            years. And it will continue to work that way. But at the same time,
+            browsers have always had a fundamental limitation: if you change the
+            URL, even through script, it triggers a roundtrip to the remote web
+            server and a full page refresh. This takes time and resources, and
+            it seems especially wasteful when you are navigating to a page that
+            is substantially similar to the current page. Everything on the new
+            page gets downloaded, even the parts that are exactly the same as
+            the current page. But the history API gives us the ability to
+            tell the browser to change the URL and download only the part we
+            need.
+          </aside>
+        </section>
+        <section>
+          <section>
+            <h4>Let’s say you have the next page</h4>
+            <img
+              width="500px"
+              src="./img/example.png"
+              alt="example"
+              class="fragment fade-in-then-out"
+              style="position: absolute; transform: translate(-50%);"
+              data-fragment-index="1"
+            />
+            <img
+              width="500px"
+              src="./img/example.desc.png"
+              alt="example describtion"
+              class="fragment fade-left"
+              style="float: left;"
+              data-fragment-index="2"
+            />
+            <p
+              class="fragment text-left"
+              data-fragment-index="2"
+              style="float: right; max-width: 40%; text-align: justify;"
+            >
+              Clicking on one of the numbered elements should change the content
+              of the purple part of the page and its URL.
+            </p>
+            <aside class="notes">
+              Let's say you have the next page. Clicking on one of the
+              numbered elements should change the content of the purple part of
+              the page and its URL.
+            </aside>
+          </section>
+          <section>
+            <h4>Something like this</h4>
+            <img
+              src="./img/example_gif.gif"
+              alt="gif"
+              style="max-width: 600px"
+            />
+            <aside class="notes">
+              Something like this. So, only half of the page changes, and it
+              would be unwise to reload it completely. That's where history API
+              comes into play.
+            </aside>
+          </section>
+        </section>
+        <section>
+          <section>
+            <h2>Example</h2>
+            <aside class="notes">Look at the example.</aside>
+          </section>
+          <section>
+            <h4>
+              This is the markup for a simple page
+            </h4>
+            <pre><code data-trim data-noescape>
+&ltul class="menu"&gt
+  &ltli&gt
+    &lta href="/item-1" class="menu__item" data-name="item-1"&gtone&lt/a&gt
+  &lt/li&gt
+  &ltli&gt
+    &lta href="/item-2" class="menu__item" data-name="item-2"&gttwo&lt/a&gt
+  &lt/li&gt
+  &ltli&gt
+    &lta href="/item-3" class="menu__item" data-name="item-3"&gtthree&lt/a&gt
+  &lt/li&gt
+  &ltli&gt
+    &lta href="/item-4" class="menu__item" data-name="item-4"&gtfour&lt/a&gt
+  &lt/li&gt
+&lt/ul&gt
+            </code></pre>
+            <aside class="notes">
+              This is the markup for a simple page: the unordered list contains
+              four items with links.
+            </aside>
+          </section>
+          <section>
+            <h4>It will look like this after adding some styles</h4>
+            <img src="./img/demo1.png" alt="demo" />
+            <aside class="notes">
+              It will look like this after adding some styles.Let's simulate
+              moving forward in browser history.
+            </aside>
+          </section>
+          <section>
+            <h4>Faked "moving forvard"</h4>
+            <p>
+              <span class="fragment" data-fragment-index="1"
+                >Add the "active" class to current element</span
+              ><span class="fragment" data-fragment-index="2"
+                >, change the URL in the browser location bar</span
+              ><span class="fragment" data-fragment-index="3"
+                >, prevent the default page refresh (due to tag &lta&gt).
+              </span>
+            </p>
+
+            <pre><code data-trim data-noescape>
+<span class="fragment" data-fragment-index="1">const items = [...document.getElementsByClassName("menu__item")];</span> 
+<span>const menu = document.querySelector(".menu");
+
+menu.addEventListener("click", e => {
+  const name = e.target.dataset.name;
+  
+  selectItem(name);
+  <span class="fragment" data-fragment-index="2">history.pushState({ name }, null, `/${name}`);</span> 
+  <span class="fragment" data-fragment-index="3">e.preventDefault();</span> 
+});
+</span> 
+<span class="fragment" data-fragment-index="1">function selectItem(name) {
+  items.forEach(item => {
+    item.classList.toggle("menu__item_selected",
+    item.dataset.name === name);
+  });
+}</span> 
+          </code></pre>
+            <aside class="notes">
+              So, we need to add a click handler to our menu element, the
+              function of adding an active class to the current element,
+              update the browser location bar, and prevent the default page
+              refresh, cause we work with the link tags. But we still need to
+              talk about what happens when the user presses the back button.
+              Popstate event? Right!
+            </aside>
+          </section>
+          <section>
+            <h4>Faked "moving backward"</h4>
+            <pre
+              class="fragment"
+              data-fragment-index="1"
+            ><code data-trim data-noescape>
+window.addEventListener('popstate', e => {
+  if (e.state !== null) {
+    selectItem(e.state.name);
+  } else selectItem(null);
+});
+            </code></pre>
+            <span class="fragment" data-fragment-index="2">OR</span>
+            <pre
+              class="fragment"
+              data-fragment-index="2"
+            ><code data-trim data-noescape>
+history.replaceState({ name: null }, null, './')
+
+window.addEventListener('popstate', e => {
+  selectItem(e.state.name);
+});
+            </code></pre>
+            <aside class="notes">
+              Before that, we bound a state object to each of history entries, now we call
+              the necessary function with the properties of this object. Do you
+              remember a null value of the state object? That's why we're
+              checking him out. We can also replace our default state.
+            </aside>
+          </section>
+          <section>
+            <h2>It's done!</h2>
+            <img src="./img/demo_gif.gif" alt="demo_gif" />
+            <aside class="notes">
+              It's done! The state object could have something less primitive,
+              like some page content, image links, or Ajax request links. It
+              would work the same way.
+            </aside>
+          </section>
+        </section>
+        <section>
+          <h2>Browser Support</h2>
+          <img src="./img/canIUse.png" alt="browser_support" class="fragment" />
+          <img
+            src="./img/wat.jpeg"
+            alt="wat"
+            style="max-width: 400px; position: relative; top: -100px;"
+            class="fragment"
+          />
+          <aside class="notes">
+            Okay, not bad. But what about browser support? Wow, this green
+            line is a good sign. Even IE can work with that. Well, the
+            history API has created a great impact on how our simple web
+            application works. It make it easy to create efficient single-page
+            application. It's a really nice API, isn't it? That's all I wanted
+            to say. Thanks very much!
+          </aside>
+        </section>
+        <section>
+          <h2>Thank you for attention!</h2>
+          <img src="./img/paws_up.jpg" alt="bye" style="max-width: 400px;" />
+        </section>
+      </div>
+    </div>
+    <script src="js/reveal.js"></script>
+
+    <script>
+      // More info about config & dependencies:
+      // - https://github.com/hakimel/reveal.js#configuration
+      // - https://github.com/hakimel/reveal.js#dependencies
+      Reveal.initialize({
+        dependencies: [
+          { src: 'plugin/markdown/marked.js' },
+          { src: 'plugin/markdown/markdown.js' },
+          { src: 'plugin/notes/notes.js', async: true },
+          { src: 'plugin/highlight/highlight.js', async: true }
+        ]
+      });
+    </script>
+  </body>
+</html>
